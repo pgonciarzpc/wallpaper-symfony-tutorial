@@ -81,3 +81,14 @@ knp_paginator:
         pagination: '@KnpPaginator/Pagination/twitter_bootstrap_v3_pagination.html.twig'
         #sortable: '@KnpPaginator/Pagination/sortable_link.html.twig' # sort link template                                
         #filtration: '@KnpPaginator/Pagination/filtration.html.twig'  # filters template
+        
+# Doctrine Migrations
+doctrine_migrations:
+    dir_name: "%kernel.root_dir%/DoctrineMigrations"
+    namespace: Application\Migrations
+    table_name: migration_versions
+    name: Application Migrations
+    organize_migrations: false
+    custom_template: ~
+    
+        
