@@ -3,11 +3,28 @@
     <head>
         <meta charset="UTF-8" />
         <title>{% block title %}Welcome!{% endblock %}</title>
+
+        <!-- Bootstrap -->
+        <link href="css/bootstrap.min.css" rel="stylesheet">
+
+        <link rel="stylesheet" href="{{ asset('css/styles.css') }}" />
+
         {% block stylesheets %}{% endblock %}
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
     <body>
+      <div class="container">
+
+        {% include('flash-messages.html.twig') %}
+
         {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
+
+      </div>
+
+        {% block javascripts %}
+          <script src="js/jquery.js"></script>
+          <script src="js/bootstrap.min.js"></script>
+          <script src="js/jquery-ui.min.js"></script>
+        {% endblock %}
     </body>
 </html>
