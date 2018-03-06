@@ -2,14 +2,42 @@
 
 namespace AppBundle\Command;
 
+use AppBundle\Entity\Wallpaper;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Doctrine\ORM\EntityManagerInterface;
+
 
 class SetupWallpapersCommand extends Command
 {
+    /**
+     *
+     * @var string 
+     */
+    private $rootDir;
+
+    /**
+     *
+     * @var EntityManagerInterface 
+     */
+    private $em;
+    
+    /**
+     * 
+     * @param string $rootDir
+     */
+    public function __construct(EntityManagerInterface $em, string $rootDir = './')
+    {
+        parent::__construct();
+        
+        $this->rootDir = $rootDir;
+        $this->em = $em;
+    }
+    
+    /**
+     * 
+     */
     protected function configure()
     {
         $this
@@ -20,6 +48,11 @@ class SetupWallpapersCommand extends Command
         ;
     }
 
+    /**
+     * 
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
 //        $argument = $input->getArgument('argument');
@@ -28,6 +61,25 @@ class SetupWallpapersCommand extends Command
 //            // ...
 //        }
 
+        $wallpapers = glob($this->rootDir . '/web/images/*.*');
+        
+        //exit(\Doctrine\Common\Util\Debug::dump($this->rootDir));
+        
+        foreach ($wallpapers as $wallpaper) {
+            $wp = (new Wallpaper())
+                    ->setFilename($wallpaper)
+                    ->setSlug($wallpaper)
+                    ->setHeight(1920)
+                    ->setWidth(1080)
+            ;
+            
+            $this->em->persist($wp);
+        }
+        
+        $this->em->flush();
+        
+        //exit(\Doctrine\Common\Util\Debug::dump($wallpapers));
+        
         $output->writeln('Command result.');
     }
 

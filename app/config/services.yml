@@ -36,5 +36,8 @@ services:
     
     app.command.wallpaper_setup:
         class: AppBundle\Command\SetupWallpapersCommand
+        arguments: 
+            $em: '@doctrine.orm.default_entity_manager'
+            $rootDir: '%kernel.project_dir%'
         tags: 
             - { name: console.command }
