@@ -3,10 +3,12 @@
 namespace AppBundle\Command;
 
 use AppBundle\Entity\Wallpaper;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
 
 
 class SetupWallpapersCommand extends Command
@@ -61,26 +63,60 @@ class SetupWallpapersCommand extends Command
 //            // ...
 //        }
 
+        $io = new SymfonyStyle($input, $output);
+        
         $wallpapers = glob($this->rootDir . '/web/images/*.*');
+        
+        $walpaperCount = count($wallpapers);
+        
+        $io->title('Importing wallpapers');
+        
+        $io->progressStart($walpaperCount);
+        
+        $fileNames = [];
         
         //exit(\Doctrine\Common\Util\Debug::dump($this->rootDir));
         
         foreach ($wallpapers as $wallpaper) {
+            
+            $pi = pathinfo($wallpaper);
+            $gis = getimagesize($wallpaper);
+            
+            $filename = $pi['basename'];
+            $slug = $pi['filename'];
+            
+            $width = $gis[0];
+            $height = $gis[1];
+            
             $wp = (new Wallpaper())
-                    ->setFilename($wallpaper)
-                    ->setSlug($wallpaper)
-                    ->setHeight(1920)
-                    ->setWidth(1080)
+                    ->setFilename($filename)
+                    ->setSlug($slug)
+                    ->setHeight($height)
+                    ->setWidth($width)
             ;
             
             $this->em->persist($wp);
+            
+            $io->progressAdvance();
+            
+            $fileNames[] = [$filename];
         }
         
         $this->em->flush();
         
+        $io->progressFinish();
+        
+        $table = new Table($output);
+        $table
+            ->setHeaders(['Filename'])
+            ->setRows($fileNames)
+        ;
+        $table->render();
+        
+        $io->success(sprintf('Cool, we added %d wallpapers. ', $walpaperCount));
         //exit(\Doctrine\Common\Util\Debug::dump($wallpapers));
         
-        $output->writeln('Command result.');
+//        $output->writeln('Command result.');
     }
 
 }
