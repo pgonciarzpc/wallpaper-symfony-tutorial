@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use AppBundle\Entity\Category;
 
 /**
  * Wallpaper
@@ -20,6 +21,13 @@ class Wallpaper
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+
+    /**
+     * Many Wallpapers have One Category
+     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\Category")
+     * @ORM\JoinColumn(name="category_id", referencedColumnName="id")
+     */
+    private $category;
 
     /**
      * @var string
@@ -60,6 +68,27 @@ class Wallpaper
         return $this->id;
     }
 
+    /**
+     * 
+     * @return Category|null
+     */
+    public function getCategory()
+    {
+        return $this->category;
+    }
+
+    /**
+     * 
+     * @param Category $category
+     * @return \AppBundle\Entity\Category
+     */
+    public function setCategory(Category $category = null)
+    {
+        $this->category = $category;
+        
+        return $this;
+    }
+    
     /**
      * Set filename
      *
